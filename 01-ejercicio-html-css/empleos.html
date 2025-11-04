@@ -13,11 +13,12 @@
 
 <body>
     <header class="header">
-        <nav class="nav">
+        <nav class="nav" aria-label="Navegación principal">
             <div class="nav__container">
-                <a class="logo" href="/">
+                <!-- Logo como parte de la navegación -->
+                <a class="logo" href="/" aria-label="DevJobs - Ir a inicio">
                     <svg width="40" height="40" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"
-                        aria-label="DevJobs logo" role="img">
+                        aria-hidden="true">
                         <path clip-rule="evenodd"
                             d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z"
                             fill="#1173D4" fill-rule="evenodd"></path>
@@ -25,9 +26,10 @@
                     <span class="logo__text">DevJobs</span>
                 </a>
 
-                <ul class="nav__links">
+                <!-- Navegación principal -->
+                <ul class="nav__links nav__links--main">
                     <li class="nav__item">
-                        <a class="nav__link" href="#">Inicio</a>
+                        <a class="nav__link" href="/" aria-current="page">Inicio</a>
                     </li>
                     <li class="nav__item">
                         <a class="nav__link" href="./resultados.html">Empleos</a>
@@ -41,14 +43,15 @@
                 </ul>
             </div>
 
-            <ul class="nav__links">
+            <!-- Acciones de usuario -->
+            <ul class="nav__links nav__links--actions">
                 <li class="nav__item">
                     <a class="nav__link--btn" href="#">Subir CV</a>
                 </li>
                 <li class="nav__item">
-                    <button class="nav__profile-btn" aria-label="Abrir menu de perfil">
-                        <img src="./img/perfil.png" alt="Imagen de perfil" width="40" height="40">
-                        <!-- <devjobs-avatar service="github" username="dardilar" size="40"></devjobs-avatar> -->
+                    <button class="nav__profile-btn" aria-label="Abrir menú de perfil" aria-haspopup="true"
+                        aria-expanded="false">
+                        <img src="./img/perfil.png" alt="" width="40" height="40" aria-hidden="true">
                     </button>
                 </li>
             </ul>
@@ -119,60 +122,80 @@
 
         <section class="search__results">
             <h2>Resultados de búsqueda</h2>
-            
-            <div class="search__results--cards">
-                <article class="search__result--card" data-location="remoto">
-                    <div>
-                        <h3>Ingeniero de Software</h3>
-                        <p>Tech Solutions Inc. | Remoto</p>
-                        <p>Buscamos un ingeniero de software con experiencia en desarrollo web y conocimientos en JavaScript, React y Node.js. El candidato ideal debe ser capaz de trabajar en equipo y tener buenas habilidades de comunicación.</p>
-                    </div>
-    
-                    <div class="search__result--card__cta">
-                        <a class="apply__btn" href="#">Aplicar</a>
-                    </div>
-                </article>
-    
-                <article class="search__result--card" data-location="cdmx">
-                    <div>
-                        <h3>Analista de Datos</h3>
-                        <p>Data Driven Co. | Ciudad de México</p>
-                        <p>Estamos buscando un analista de datos con experiencia en el manejo de grandes conjuntos de datos y herramientas de visualización. Se requiere conocimiento en SQL, Python y R.</p>
-                    </div>
-    
-                    <div class="search__result--card__cta">
-                        <a class="apply__btn" href="#">Aplicar</a>
-                    </div>
-                </article>
-    
-                <article class="search__result--card" data-location="guadalajara">
-                    <div>
-                        <h3>Desarrollador de Aplicaciones Móviles</h3>
-                        <p>Mobile Apps Ltd. | Guadalajara</p>
-                        <p>Buscamos un desarrollador de aplicaciones móviles con experiencia en iOS y/o Android. El candidato debe tener conocimientos en Swift, Kotlin y el desarrollo de interfaces de usuario.</p>
-                    </div>
-    
-                    <div class="search__result--card__cta">
-                        <a class="apply__btn" href="#">Aplicar</a>
-                    </div>
-                </article>
-    
-                <article class="search__result--card" data-location="remoto">
-                    <div>
-                        <h3>Ingeniero de DevOps</h3>
-                        <p>Cloud Services SA | Remoto</p>
-                        <p>Estamos buscando un ingeniero de DevOps con experiencia en la gestión de infraestructuras en la nube, automatización de procesos y herramientas de integración continua. Se requiere conocimiento en AWS, Azure o GCP.</p>
-                    </div>
-    
-                    <div class="search__result--card__cta">
-                        <a class="apply__btn" href="#">Aplicar</a>
-                    </div>
-                </article>
-            </div>
+
+            <!-- Los resultados de búsqueda se pueden interpretar como una lista de resultados -->
+            <ul class="search__results--cards">
+                <li>
+                    <article class="search__result--card" data-location="remoto">
+                        <div>
+                            <h3>Ingeniero de Software</h3>
+                            <!-- Que sea un párrafo está genial! pero esto lo podemos mejorar con un small, que se asocia a un contenido complementario del principal -->
+                            <small>Tech Solutions Inc. | Remoto</small>
+                            <p>Buscamos un ingeniero de software con experiencia en desarrollo web y conocimientos en
+                                JavaScript, React y Node.js. El candidato ideal debe ser capaz de trabajar en equipo y
+                                tener buenas habilidades de comunicación.</p>
+                        </div>
+
+                        <div class="search__result--card__cta">
+                            <a class="apply__btn" href="#">Aplicar</a>
+                        </div>
+                    </article>
+                </li>
+                <li>
+                    <article class="search__result--card" data-location="cdmx">
+                        <div>
+                            <h3>Analista de Datos</h3>
+                            <small>Data Driven Co. | Ciudad de México</small>
+                            <p>Estamos buscando un analista de datos con experiencia en el manejo de grandes conjuntos
+                                de datos y herramientas de visualización. Se requiere conocimiento en SQL, Python y R.
+                            </p>
+                        </div>
+
+                        <div class="search__result--card__cta">
+                            <a class="apply__btn" href="#">Aplicar</a>
+                        </div>
+                    </article>
+                </li>
+                <li>
+                    <article class="search__result--card" data-location="guadalajara">
+                        <div>
+                            <h3>Desarrollador de Aplicaciones Móviles</h3>
+                            <small>Mobile Apps Ltd. | Guadalajara</small>
+                            <p>Buscamos un desarrollador de aplicaciones móviles con experiencia en iOS y/o Android. El
+                                candidato debe tener conocimientos en Swift, Kotlin y el desarrollo de interfaces de
+                                usuario.</p>
+                        </div>
+
+                        <div class="search__result--card__cta">
+                            <a class="apply__btn" href="#">Aplicar</a>
+                        </div>
+                    </article>
+                </li>
+                <li>
+                    <article class="search__result--card" data-location="remoto">
+                        <div>
+                            <h3>Ingeniero de DevOps</h3>
+                            <small>Cloud Services SA | Remoto</small>
+                            <p>Estamos buscando un ingeniero de DevOps con experiencia en la gestión de infraestructuras
+                                en la nube, automatización de procesos y herramientas de integración continua. Se
+                                requiere conocimiento en AWS, Azure o GCP.</p>
+                        </div>
+
+                        <div class="search__result--card__cta">
+                            <a class="apply__btn" href="#">Aplicar</a>
+                        </div>
+                    </article>
+                </li>
+            </ul>
         </section>
 
         <nav class="pagination">
-            <button class="slider__btn slider__btn--left"></button>
+            <!-- 
+            Cuando los button o anchor no tienen un texto contextual de lo que hacen, debemos usar atributos que cumplan con ese propósito.
+            Aria-label permite que los lectores de pantalla conozcan el propósito del elemento.
+            Title muestra el texto que tiene como valor en un tooltip al hacer hover en el elemento.
+            -->
+            <button class="slider__btn slider__btn--left" aria-label="Pagina anterior" title="Anterior"></button>
             <ul class="pagination__list">
                 <li><button class="page page--1 active">1</button></li>
                 <li><button class="page page--2">2</button></li>
@@ -180,7 +203,7 @@
                 <li><button class="page page--4">4</button></li>
                 <li><button class="page page--5">5</button></li>
             </ul>
-            <button class="slider__btn slider__btn--right"></button>
+            <button class="slider__btn slider__btn--right" aria-label="Pagina siguiente" title="Siguiente"></button>
         </nav>
     </main>
 </body>
