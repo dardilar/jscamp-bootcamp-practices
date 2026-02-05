@@ -14,7 +14,7 @@
 
 ## Cuarta parte
 
-<!-- Dudas de la cuarta parte del ejercicio -->
+- Me confundo al momento de enviar una función como prop, tengo entendido que se envía de la siguiente manera: Como al componente padre tiene el manejo de los estados, se envía la función que se encarga de cambiar el estado de la página actual; el componente hijo recibe esta función y la ejecuta con un evento cuando se hace clic en el botón; donde se ejecuta otra funcion que se encarga de pasar el parametro a la función que se encarga de cambiar el estado de la página actual. (Creo que es el caso pero me confundo un poco).
 
 ## Quinta parte
 

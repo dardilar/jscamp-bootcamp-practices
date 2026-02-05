@@ -456,7 +456,7 @@ article {
       transform: scale(0.9);
     }
 
-    &.is-active {
+    &.isActive {
       background-color: var(--primary-light);
       color: white;
       pointer-events: none;
