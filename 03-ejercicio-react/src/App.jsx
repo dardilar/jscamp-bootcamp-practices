@@ -1,19 +1,21 @@
 import { Header } from "./components/Header";
-import { SearchFormSection } from "./components/SearchFormSection";
-import { SearchResultsSection } from "./components/SearchResultsSection";
 import { Footer } from "./components/Footer";
+import { Route } from "./components/Route";
+
+import { HomePage } from "./pages/Home";
+import { SearchPage } from "./pages/Search";
+import { NotFoundPage } from "./pages/404";
 
 function App() {
   return (
     <>
       <Header />
-      <main>
-        <SearchFormSection />
-        <SearchResultsSection />
-      </main>
+      <Route path="/" component={HomePage} />
+      <Route path="/search" component={SearchPage} />
+      <Route path="*" component={NotFoundPage} />
       <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

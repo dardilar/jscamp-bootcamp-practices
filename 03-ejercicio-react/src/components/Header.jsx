@@ -1,7 +1,9 @@
+import { Link } from "./Link";
+
 export function Header() {
   return (
     <header>
-      <a href="/" style={{ textDecoration: "none" }}>
+      <Link href="/" style={{ textDecoration: "none" }}>
         <h1 style={{ color: "white" }}>
           <svg
             fill="none"
@@ -17,10 +19,11 @@ export function Header() {
           </svg>
           DevJobs
         </h1>
-      </a>
+      </Link>
 
       <nav>
-        <a href="#">Empleos</a>
+        <Link href="/">Home</Link>
+        <Link href="/search">Empleos</Link>
       </nav>
     </header>
   );

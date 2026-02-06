@@ -1,4 +1,3 @@
-
 import { JobCard } from "./JobCard";
 
 export function JobListing({ jobs }) {
