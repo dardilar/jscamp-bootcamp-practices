@@ -21,6 +21,8 @@ export function SearchFormSection({onSearch, onTextFilter}) {
   };
 
   const handleTextChange = function (e) {
+    /* Cada vez que hacemos un `onChange` del input, también se dispara un `onChange` del form. Para evitar esto y hacer una doble validación, usamos `stopPropagation`. De esta manera, el evento de `onChange` del form no se dispara. */
+    e.stopPropagation()
     const text = e.target.value;
     onTextFilter(text);
   };

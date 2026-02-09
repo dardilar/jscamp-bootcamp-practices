@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SearchFormSection } from "../components/SearchFormSection";
 import { SearchResultsSection } from "../components/SearchResultsSection";
 
