@@ -2,7 +2,7 @@
 
 ## Primera parte
 
-<!-- Dudas de la primera parte del ejercicio -->
+¿Por qué al migrar `useRouter` a React Router seguimos manteniendo el hook personalizado en lugar de usar `useNavigate` y `useLocation` directamente en los componentes?
 
 ## Segunda parte
 
@@ -10,7 +10,7 @@
 
 ## Tercera parte
 
-<!-- Dudas de la tercera parte del ejercicio -->
+Tengo entendido que `useSearchParams` nos permite leer y escribir los parámetros de la URL, pero no tengo claro el flujo completo, ¿cuándo el estado de los filtros actualiza la URL y cuándo la URL inicializa el estado?
 
 ## Cuarta parte
 
@@ -22,4 +22,6 @@
 
 ## Sexta parte
 
-<!-- Dudas de la sexta parte del ejercicio -->
+En la función `set` de Zustand, a veces se pasa directamente un objeto `set({ isLoggedIn: true })` y otras veces se pasa una función que recibe `state`: `set((state) => ({ favorites: [...state.favorites, jobId] }))`. ¿Cuándo debemos usar una forma u otra? ¿A que se refiere el parametro `state`?
+
+¿Cuándo conviene usar Zustand y cuándo es suficiente con prop-drilling o Context de React? ¿Hay alguna regla para decidir qué herramienta usar según el tamaño o tipo de estado que necesitamos compartir o es mejor utilizar Zustand en general?
