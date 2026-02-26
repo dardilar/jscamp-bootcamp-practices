@@ -1,6 +1,7 @@
 
 import { NavLink } from "react-router";
 import { useAuthStore } from "../store/authStore";
+import { useFavoritesStore } from "../store/favoritesStore";
 import { Link } from "./Link";
 
 export function Header() {
@@ -36,10 +37,16 @@ export function Header() {
 
 const HeaderUserButton = function() {
   const { isLoggedIn, login, logout } = useAuthStore();
+  const { clearFavorites } = useFavoritesStore();
+
+  const handleLogout = () => {
+    logout();
+    clearFavorites();
+  };
 
   return (
     isLoggedIn ? (
-      <button style={{ marginLeft: 'auto' }} onClick={logout}>Cerrar sesión</button>
+      <button style={{ marginLeft: 'auto' }} onClick={handleLogout}>Cerrar sesión</button>
     ) : (
       <button style={{ marginLeft: 'auto' }} onClick={login}>Iniciar sesión</button>
     )

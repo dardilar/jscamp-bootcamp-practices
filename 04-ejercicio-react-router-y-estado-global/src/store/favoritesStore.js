@@ -5,6 +5,10 @@ export const useFavoritesStore = create((set, get) => ({
   favorites: [],
 
   // Acciones
+  clearFavorites: () => {
+    set({ favorites: [] })
+  },
+
   addFavorite: (jobId) => {
     set((state) => ({
       favorites: state.favorites.includes(jobId)

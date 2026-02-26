@@ -67,10 +67,11 @@ function DetailApplyButton() {
 }
 
 function DetailFavoriteButton({ jobId }) {
+  const { isLoggedIn } = useAuthStore();
   const { toggleFavorite, isFavorite } = useFavoritesStore();
 
   return (
-    <button onClick={() => toggleFavorite(jobId)} aria-label={isFavorite(jobId) ? 'Quitar de favoritos' : 'Agregar a favoritos'}>{isFavorite(jobId) ? '♥️' : '🤍'}</button>
+    <button disabled={!isLoggedIn} onClick={() => toggleFavorite(jobId)} aria-label={isFavorite(jobId) ? 'Quitar de favoritos' : 'Agregar a favoritos'}>{isFavorite(jobId) ? '♥️' : '🤍'}</button>
   )
 }
 
