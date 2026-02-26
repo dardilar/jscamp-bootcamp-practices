@@ -1,10 +1,13 @@
-import { Link } from './Link'
+
+import { NavLink } from "react-router";
+import { useAuthStore } from "../store/authStore";
+import { Link } from "./Link";
 
 export function Header() {
   return (
     <header>
-      <Link href="/" style={{ textDecoration: 'none' }}>
-        <h1 style={{ color: 'white' }}>
+      <Link to="/" style={ {textDecoration:'none'} }>
+        <h1 style={ {color:'white'} }>
           <svg
             fill="none"
             stroke="currentColor"
@@ -22,10 +25,23 @@ export function Header() {
       </Link>
 
       <nav>
-        <Link href="/search">Empleos</Link>
-
-        <a href="/search">Sin SPA</a>
+        <NavLink className={({isActive}) => isActive ? 'nav-link-active' : ''} to="./">Inicio</NavLink>
+        <NavLink className={({isActive}) => isActive ? 'nav-link-active' : ''} to="./search">Empleos</NavLink>
       </nav>
+
+      <HeaderUserButton />
     </header>
-  )
+  );
+}
+
+const HeaderUserButton = function() {
+  const { isLoggedIn, login, logout } = useAuthStore();
+
+  return (
+    isLoggedIn ? (
+      <button style={{ marginLeft: 'auto' }} onClick={logout}>Cerrar sesión</button>
+    ) : (
+      <button style={{ marginLeft: 'auto' }} onClick={login}>Iniciar sesión</button>
+    )
+  );
 }

@@ -1,0 +1,10 @@
+import { create } from "zustand";
+
+export const useAuthStore = create((set) => ({
+    //Estado
+    isLoggedIn: false,
+
+    //Funciones
+    login: () => set({ isLoggedIn: true }),
+    logout: () => set({ isLoggedIn: false }),
+}));
