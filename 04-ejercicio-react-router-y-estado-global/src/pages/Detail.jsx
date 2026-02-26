@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "../components/Link";
+
 import { useAuthStore } from "../store/authStore";
 import { useFavoritesStore } from "../store/favoritesStore";
 
@@ -38,7 +39,7 @@ function DetailPageBreadcrumb({ job }) {
   );
 }
 
-function DetailPageHeader({ job, children }) {
+function DetailPageHeader({ job }) {
   return (
     <header className={styles.header}>
       <div>

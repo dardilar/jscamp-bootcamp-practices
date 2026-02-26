@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router"
-import { useRouter } from "./useRouter.jsx"
 
 const RESULTS_PER_PAGE = 4;
 
@@ -26,8 +25,6 @@ export const useFilters = function () {
   const [jobs, setJobs] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  const { navigateTo } = useRouter();
 
   useEffect(() => {
   setCurrentPage(1)
