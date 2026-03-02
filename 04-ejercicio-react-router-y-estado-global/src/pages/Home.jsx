@@ -7,7 +7,8 @@ export default function HomePage() {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    const searchText = formData.get('search');
+    /* Evitamos que el usuario pueda enviar solo espacios en blanco */
+    const searchText = formData.get('search').trim();
     const url = searchText ? `/search?text=${encodeURIComponent(searchText)}` : '/search';
     
     navigateTo(url);
