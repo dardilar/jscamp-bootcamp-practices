@@ -1,9 +1,10 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 
 export const useSearchForm = function({ idTechnology, idLocation, idExperienceLevel, idText, onSearch, onTextFilter }) {
   const timeoutId = useRef(null);
   
-  const [searchText, setSearchText] = useState("");
+  /* No hace falta este estado */
+  // const [searchText, setSearchText] = useState("");
 
   const handleSubmit = function(e) {
     e.preventDefault();
@@ -25,7 +26,8 @@ export const useSearchForm = function({ idTechnology, idLocation, idExperienceLe
   
   const handleTextChange = function(e) {
     const text = e.target.value;
-    setSearchText(text); // Update input immediately
+    /* No hace falta actualizar un estado que no se usa */
+    // setSearchText(text); // Update input immediately
 
     // Debounce: Cancel previous timeout
     if(timeoutId.current) clearTimeout(timeoutId.current);
