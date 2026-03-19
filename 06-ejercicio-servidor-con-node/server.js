@@ -1,17 +1,6 @@
 import { createServer } from 'node:http'
-
-process.loadEnvFile()
-
-const port = process.env.PORT || 3000
-
-const server = createServer((req, res) => {
-  // TODO: Aquí irá la lógica del servidor
-})
-
-server.listen(port, () => {
-  const address = server.address()
-  console.log(`Servidor escuchando en http://localhost:${address.port}`)
-})
+import { json } from 'node:stream/consumers';
+import { randomUUID } from 'node:crypto';
 
 const users = [
   {
@@ -65,3 +54,47 @@ const users = [
     age: 30,
   },
 ]
+
+process.loadEnvFile()
+
+const port = process.env.PORT || 3000;
+
+const sendJson = function(res, statusCode, data) {
+    res.statusCode = statusCode;
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    return res.end(JSON.stringify(data));
+}
+
+const server = createServer(async (req, res) => {
+  const { url, method } = req;
+
+  if(method === 'GET') {
+    if(url === '/users') {
+      sendJson(res, 200, users);
+    }
+  };
+
+  if(method === 'POST') {
+    if(url === '/users') {
+      const body = await json(req); 
+
+      if(!body || !body.name || !body.age) {
+        return sendJson(res, 400, { error: 'Name and age are required' });
+      }
+  
+      const newUser = {
+        id: randomUUID(),
+        name: body.name,
+        age: body.age
+      };
+      
+      users.push(newUser);
+      return sendJson(res, 201, newUser);
+    };
+  }
+})
+
+server.listen(port, () => {
+  const address = server.address()
+  console.log(`Servidor escuchando en http://localhost:${address.port}`)
+})
