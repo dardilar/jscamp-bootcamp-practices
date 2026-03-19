@@ -70,8 +70,12 @@ const server = createServer(async (req, res) => {
 
   if(method === 'GET') {
     if(url === '/users') {
-      sendJson(res, 200, users);
-    }
+      return sendJson(res, 200, users);
+    };
+
+    if(url === '/health') {
+      return sendJson(res, 200, { status: 'OK', uptime: process.uptime() });
+    };
   };
 
   if(method === 'POST') {
@@ -91,7 +95,9 @@ const server = createServer(async (req, res) => {
       users.push(newUser);
       return sendJson(res, 201, newUser);
     };
-  }
+  };
+
+  return sendJson(res, 404, { error: 'Page not found' });
 })
 
 server.listen(port, () => {
