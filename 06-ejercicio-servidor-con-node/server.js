@@ -69,8 +69,42 @@ const server = createServer(async (req, res) => {
   const { url, method } = req;
 
   if(method === 'GET') {
-    if(url === '/users') {
-      return sendJson(res, 200, users);
+    if(url.startsWith('/users')) {
+      const urlObj = new URL(url, `http://${req.headers.host}`);
+      
+      const nameFilter = urlObj.searchParams.get('name');
+      const limit = urlObj.searchParams.get('limit');
+      const offset = urlObj.searchParams.get('offset');
+      const minAge = urlObj.searchParams.get('minAge');
+      const maxAge = urlObj.searchParams.get('maxAge');
+
+      let filteredUsers = users;
+      
+      if(nameFilter) {
+        filteredUsers = filteredUsers.filter(user => 
+          user.name.toLowerCase().includes(nameFilter.toLowerCase())
+        );
+      }
+
+      if(limit && offset) {
+        const limitNum = Number(limit);
+        const offsetNum = Number(offset);
+        filteredUsers = filteredUsers.slice(offsetNum, offsetNum + limitNum);
+      }
+
+      if(minAge) {
+        const minAgeNum = Number(minAge);
+        
+        filteredUsers = filteredUsers.filter(user => user.age >= minAgeNum);
+      }
+
+      if(maxAge) {
+        const maxAgeNum = Number(maxAge);
+        
+        filteredUsers = filteredUsers.filter(user => user.age <= maxAgeNum);
+      }
+      
+      return sendJson(res, 200, filteredUsers);
     };
 
     if(url === '/health') {
