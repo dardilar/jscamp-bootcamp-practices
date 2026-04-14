@@ -34,11 +34,7 @@ function validatePartialUpdate(req, res, next) {
 
 jobsRouter.get('/', JobController.getAll)
 jobsRouter.get('/:id', JobController.getId)
-
 jobsRouter.post('/', validateCreate, JobController.create)
-
 jobsRouter.put('/:id', JobController.update)
-
 jobsRouter.patch('/:id', validatePartialUpdate, JobController.partialUpdate)
-
 jobsRouter.delete('/:id', JobController.delete)

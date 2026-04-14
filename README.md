@@ -15,3 +15,4 @@ En este repositorio podrás ir entregando los ejercicios del bootcamp
 | 5 | **cli con node.js** | Desarrolla los retos de cli con node.js | [![GitHub Badge](https://img.shields.io/badge/estado-pendiente-yellow)](05-ejercicio-cli-con-node)         |
 | 6 | **servidor con node.js** | Desarrolla los retos de servidor con node.js | [![GitHub Badge](https://img.shields.io/badge/estado-pendiente-yellow)](06-ejercicio-servidor-con-node)         |
 | 7 | **api rest con express y mvc** | Desarrolla los retos de api rest con express y mvc | [![GitHub Badge](https://img.shields.io/badge/estado-pendiente-yellow)](07-ejercicio-api-rest-con-express-y-mvc)         |
+| 8 | **testing con node y zod** | Desarrolla los retos de testing con node y zod | [![GitHub Badge](https://img.shields.io/badge/estado-pendiente-yellow)](08-ejercicio-testing-con-node-y-zod)         |
