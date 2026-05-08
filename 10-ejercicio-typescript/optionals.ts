@@ -7,35 +7,37 @@ import {
   filterByMinSalary,
 } from './functions.ts'
 
-// Función de búsqueda avanzada con opcionales
-export function advancedSearch(jobs: any[], options: any): any[] {
+import type { Job } from './objects.ts'
+import type { ExperienceLevel, Technology, WorkMode } from './types.ts'
+
+export function advancedSearch(jobs: Job[], options?: { text?: string, level?: ExperienceLevel, technology?: Technology, minSalary?: number, workMode?: WorkMode }): Job[] {
   let results = jobs
 
-  if (options.text) {
+  if (options?.text) {
     results = searchJobs(results, options.text)
   }
 
-  if (options.level) {
+  if (options?.level) {
     results = filterByExperience(results, options.level)
   }
 
-  if (options.technology) {
+  if (options?.technology) {
     results = filterByTechnology(results, options.technology)
   }
 
-  if (options.minSalary) {
+  if (options?.minSalary) {
     results = filterByMinSalary(results, options.minSalary)
   }
 
-  if (options.workMode) {
-    results = results.filter((job) => job.workMode === options.workMode)
+  if (options?.workMode) {
+    results = results.filter((job) => job.workMode === options?.workMode)
   }
 
   return results
 }
 
 // Función con valores por defecto
-export function getRecentJobs(jobs: any[], days: any): any[] {
+export function getRecentJobs(jobs: Job[], days: number = 30): Job[] { // days no puede ser opcional y tener un valor por defecto
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - days)
 
