@@ -7,7 +7,7 @@ export class JobController {
         const { text, title, level, limit = DEFAULTS.LIMIT_PAGINATION, technology, offset = DEFAULTS.LIMIT_OFFSET } = req.query
 
         const paginatedJobs = await JobModel.getAll({ text, title, level, limit, technology, offset })
-        res.json(paginatedJobs)
+        return res.json(paginatedJobs)
     }
 
     static async getById(req, res) {
@@ -24,24 +24,24 @@ export class JobController {
 
     static async create(req, res) {
         const job = await JobModel.create(req.body)
-        res.json(job)
+        return res.status(201).json(job)
     }
 
     static async update(req, res) {
         const { id } = req.params
         const job = await JobModel.update({ id, data: req.body })
-        res.json(job)
+        return res.json(job)
     }
 
     static async partialUpdate(req, res) {
         const { id } = req.params
         const job = await JobModel.partialUpdate({ id, data: req.body })
-        res.json(job)
+        return res.json(job)
     }
 
     static async delete(req, res) {
         const { id } = req.params
         const job = await JobModel.delete({ id })
-        res.json(job)
+        return res.json(job)
     }
 }
