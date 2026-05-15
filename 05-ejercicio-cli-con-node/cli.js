@@ -2,17 +2,20 @@ import { readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
 if(!process.permission) {
-    console.error('This script must be run with the Node.js Permission Model enabled.\nUse: node --permission --allow-fs-read="." cli.js');
+    console.error('This script must be run with the Node.js Permission Model enabled.\nUse: node --permission --allow-fs-read="." cli.js ./');
     process.exit(1);
 }
 
-if(!process.permission.has('fs.read', '.')) {
-    console.error('Permission denied: fs.read is required. Run with --allow-fs-read="."');
-    process.exit(1);
-}
 
 const args = process.argv.slice(2);
 const dir = args.find(arg => !arg.startsWith('--')) ?? '.';
+
+// esto debería estar después de saber el directorio al que queremos acceder, así podemos conocer si el usuario dio permisos específicos para leer ese directorio
+if(!process.permission.has('fs.read', dir)) {
+    console.error(`Permission denied: fs.read is required. Run with --allow-fs-read="${dir}"`);
+    process.exit(1);
+}
+
 const asc = args.includes('--asc');
 const desc = args.includes('--desc');
 const justFiles = args.includes('--files');
@@ -25,7 +28,14 @@ const formatBytes = function(bytes) {
     return bytes / 1024 / 1024 / 1024 + ' GB';
 }
 
-const files = await readdir(dir);
+// Si el directorio no existe, lo podemos encapsular en un try-catch
+let files
+try {
+    files = await readdir(dir);
+} catch(err) {
+    console.error(`Error reading directory`);
+    process.exit(1);
+}
 
 const entries = await Promise.all(
     files.map(async(name) => {
