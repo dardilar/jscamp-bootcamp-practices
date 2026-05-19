@@ -69,6 +69,10 @@ const server = createServer(async (req, res) => {
   const { url, method } = req;
 
   if(method === 'GET') {
+    // Muy bien! Más que un `startsWidth`, usaría una igualdad estricta.
+    // Si tenemos un endpoint como /user, con startsWith('/users') 
+    // capturaría también esa ruta.
+    // Lo dejo así, pero a tener en cuenta
     if(url.startsWith('/users')) {
       const urlObj = new URL(url, `http://${req.headers.host}`);
       
@@ -87,19 +91,48 @@ const server = createServer(async (req, res) => {
       }
 
       if(limit && offset) {
-        const limitNum = Number(limit);
-        const offsetNum = Number(offset);
+        // Si el usuario pone un número decimal, lo redondeamos a entero
+        const limitNum = Math.floor(Number(limit));
+        const offsetNum = Math.floor(Number(offset));
+
+        // Podemos hacer más validaciones:
+
+        const isInvalidLimit = !isNaN(limitNum) && limitNum <= 0;
+        const isInvalidOffset = !isNaN(offsetNum) && offsetNum < 0;
+        
+        if(isInvalidLimit) {
+          return sendJson(res, 400, { error: 'Invalid limit' });
+        }
+        
+        if(isInvalidOffset) {
+          return sendJson(res, 400, { error: 'Invalid offset' });
+        }
+
         filteredUsers = filteredUsers.slice(offsetNum, offsetNum + limitNum);
       }
 
       if(minAge) {
-        const minAgeNum = Number(minAge);
+        const minAgeNum = Math.floor(Number(minAge));
+
+        // Podemos hacer más validaciones:
+        const isInvalidMinAge = !isNaN(minAgeNum) && minAgeNum < 0;
+        
+        if(isInvalidMinAge) {
+          return sendJson(res, 400, { error: 'Invalid minAge' });
+        }
         
         filteredUsers = filteredUsers.filter(user => user.age >= minAgeNum);
       }
 
       if(maxAge) {
-        const maxAgeNum = Number(maxAge);
+        const maxAgeNum = Math.floor(Number(maxAge));
+
+        // Podemos hacer más validaciones:
+        const isInvalidMaxAge = !isNaN(maxAgeNum) && maxAgeNum < 0;
+        
+        if(isInvalidMaxAge) {
+          return sendJson(res, 400, { error: 'Invalid maxAge' });
+        }
         
         filteredUsers = filteredUsers.filter(user => user.age <= maxAgeNum);
       }
