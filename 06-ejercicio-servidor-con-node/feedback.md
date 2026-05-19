@@ -1,5 +1,3 @@
 <!-- Aquí irá el feedback de la corrección del ejercicio -->
 Excelente trabajo!
-Agregamos más validaciones a los campus numéricos, por el resto, todo correcto!
-
-A seguir así!
+Si quedó alguna duda de la respuesta en `dudas.md` nos comentas porfa, un saludo y a seguir trabajando!
