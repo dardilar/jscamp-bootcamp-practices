@@ -32,21 +32,70 @@ after(async () => {
   });
 });
 
+/* Podemos crear unos helpers que nos ayuden a hacer los tests más legibles y reutilizar código */
+const handleGetRequestAndAssertStatus = async (path, expectedStatus = 200) => {
+  const response = await fetch(`${BASE_URL}${path}`);
+  assert.strictEqual(response.status, expectedStatus);
+  
+  return response.json();
+};
+
+const handlePostRequestAndAssertStatus = async (path, body, expectedStatus = 200) => {
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  
+  assert.strictEqual(response.status, expectedStatus);
+  
+  return response.json();
+};
+
+const handlePutRequestAndAssertStatus = async (path, body, expectedStatus = 200) => {
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  
+  assert.strictEqual(response.status, expectedStatus);
+};
+
+const handlePatchRequestAndAssertStatus = async (path, body, expectedStatus = 200) => {
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  
+  assert.strictEqual(response.status, expectedStatus);
+};
+
+const handleDeleteRequestAndAssertStatus = async (path, expectedStatus = 200) => {
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method: "DELETE",
+  });
+  
+  assert.strictEqual(response.status, expectedStatus);
+};
+
 describe("GET /jobs", () => {
   test("Debe responder con 200 y un array de trabajos", async () => {
-    const response = await fetch(`${BASE_URL}/jobs`);
-    assert.strictEqual(response.status, 200);
-
-    const json = await response.json();
+    const json = await handleGetRequestAndAssertStatus("/jobs", 200);
     assert.ok(Array.isArray(json.data), "La respuesta debe ser un array");
   });
 
   test("Debe filtrar jobs por tecnologia", async () => {
     const tech = "react";
-    const response = await fetch(`${BASE_URL}/jobs?technology=${tech}`);
-    assert.strictEqual(response.status, 200);
+    const json = await handleGetRequestAndAssertStatus(`/jobs?technology=${tech}`, 200);
 
-    const json = await response.json();
     assert.ok(
       json.data.every((job) => job.data.technology.includes(tech)),
       "Todos los trabajos deben incluir la tecnologia",
@@ -54,28 +103,37 @@ describe("GET /jobs", () => {
   });
 
   test("Debe respetar el límite de resultados", async () => {
-    const response = await fetch(`${BASE_URL}/jobs?limit=2`);
-    assert.strictEqual(response.status, 200);
+    const limit = 2;
+    const json = await handleGetRequestAndAssertStatus(`/jobs?limit=${limit}`, 200);
 
-    const json = await response.json();
-    assert.strictEqual(json.limit, 2, "El límite debe ser el especificado");
+    assert.strictEqual(json.limit, limit, "El límite debe ser el especificado");
     assert.strictEqual(
       json.data.length,
-      2,
+      limit,
       "La cantidad de trabajos debe ser el especificado",
     );
   });
 
   test("Debe aplicar offset correctamente", async () => {
-    const response = await fetch(`${BASE_URL}/jobs?offset=1`);
-    assert.strictEqual(response.status, 200);
+    const offset = 1;
+    const json = await handleGetRequestAndAssertStatus(`/jobs?offset=${offset}`, 200);
 
-    const json = await response.json();
-    assert.strictEqual(json.offset, 1, "El offset debe ser el especificado");
+    assert.strictEqual(json.offset, offset, "El offset debe ser el especificado");
     assert.ok(
       json.data[0].id === "d35b2c89-5d60-4f26-b19a-6cfb2f1a0f57",
       "El primer trabajo debe ser el segundo de la lista",
     );
+
+    /* También podemos no depender de un ID escrito a mano, y buscar uno en BBDD. Por si en algún momento cambia */
+
+    // 1. Obtenemos todos los jobs
+    const allJobs = await handleGetRequestAndAssertStatus("/jobs", 200);
+    
+    // 2. Obtenemos el job correspondiente al offset
+    const jobAtOffset = allJobs.data[offset];
+    
+    // 3. Comprobamos que el job obtenido es el mismo que el que se obtiene con el offset
+    assert.strictEqual(json.data[0].id, jobAtOffset.id, "El primer trabajo debe ser el segundo de la lista");
   });
 });
 
@@ -93,15 +151,8 @@ describe("POST /jobs", () => {
       },
     };
 
-    const response = await fetch(`${BASE_URL}/jobs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newJob),
-    });
+    const json = await handlePostRequestAndAssertStatus("/jobs", newJob, 201);
 
-    assert.strictEqual(response.status, 201, "El status debe ser 201");
-
-    const json = await response.json();
     assert.ok(json.id, "El job devuelto debe tener un id generado");
     assert.strictEqual(json.titulo, newJob.titulo, "El titulo debe coincidir");
     assert.strictEqual(
@@ -129,70 +180,37 @@ describe("POST /jobs", () => {
       data: { technology: ["javascript"] },
     };
 
-    const post = (body) =>
-      fetch(`${BASE_URL}/jobs`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+    // 1. Titulo con menos de 3 caracteres
+    await handlePostRequestAndAssertStatus("/jobs", { ...validBase, titulo: "ab" }, 400);
 
-    const shortTitulo = await post({ ...validBase, titulo: "ab" });
-    assert.strictEqual(
-      shortTitulo.status,
-      400,
-      "Titulo con menos de 3 caracteres debe devolver 400",
-    );
+    // 2. Titulo con más de 100 caracteres
+    await handlePostRequestAndAssertStatus("/jobs", { ...validBase, titulo: "a".repeat(101) }, 400);
 
-    const longTitulo = await post({ ...validBase, titulo: "a".repeat(101) });
-    assert.strictEqual(
-      longTitulo.status,
-      400,
-      "Titulo con más de 100 caracteres debe devolver 400",
-    );
+    // 3. Sin campo titulo
+    await handlePostRequestAndAssertStatus("/jobs", { ...validBase }, 400);
 
-    const noTitulo = await post({ ...validBase });
-    assert.strictEqual(
-      noTitulo.status,
-      400,
-      "Sin campo titulo debe devolver 400",
-    );
+    // 4. Titulo que no sea string
+    await handlePostRequestAndAssertStatus("/jobs", { ...validBase, titulo: 12345 }, 400);
 
-    const numberTitulo = await post({ ...validBase, titulo: 12345 });
-    assert.strictEqual(
-      numberTitulo.status,
-      400,
-      "Titulo que no sea string debe devolver 400",
-    );
-
-    const noDescripcion = await post({
+    // 5. Sin descripcion (opcional)
+    await handlePostRequestAndAssertStatus("/jobs", {
       ...validBase,
       titulo: "Desarrollador Web",
-    });
-    assert.strictEqual(
-      noDescripcion.status,
-      201,
-      "Sin descripcion (opcional) debe devolver 201",
-    );
+    }, 201);
   });
 });
 
 describe("GET /jobs/:id", () => {
   test("Debe devolver el trabajo con ID especificado", async () => {
     const jobId = "d35b2c89-5d60-4f26-b19a-6cfb2f1a0f57";
-    const response = await fetch(`${BASE_URL}/jobs/${jobId}`);
-    assert.strictEqual(response.status, 200);
-
-    const json = await response.json();
+    
+    const json = await handleGetRequestAndAssertStatus(`/jobs/${jobId}`, 200);
     assert.strictEqual(json.id, jobId);
   });
 
   test("Debe enviar 404 cuando el ID no existe", async () => {
     const jobId = "noexiste";
-    const response = await fetch(`${BASE_URL}/jobs/${jobId}`);
-    assert.strictEqual(response.status, 404);
-    
-    const json = await response.json();
-    assert.ok(json.error);
+    await handleGetRequestAndAssertStatus(`/jobs/${jobId}`, 404);
   });
 });
 
@@ -211,17 +229,9 @@ describe("PUT /jobs/:id", () => {
       },
     };
 
-    const putResponse = await fetch(`${BASE_URL}/jobs/${jobId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedJob),
-    });
-    assert.strictEqual(putResponse.status, 204, "El status debe ser 204");
+    await handlePutRequestAndAssertStatus(`/jobs/${jobId}`, updatedJob, 204);
 
-    const getResponse = await fetch(`${BASE_URL}/jobs/${jobId}`);
-    assert.strictEqual(getResponse.status, 200);
-
-    const json = await getResponse.json();
+    const json = await handleGetRequestAndAssertStatus(`/jobs/${jobId}`, 200);
     assert.strictEqual(json.titulo, updatedJob.titulo, "El titulo debe haberse actualizado");
     assert.strictEqual(json.empresa, updatedJob.empresa, "La empresa debe haberse actualizado");
     assert.strictEqual(json.ubicacion, updatedJob.ubicacion, "La ubicacion debe haberse actualizado");
@@ -231,13 +241,7 @@ describe("PUT /jobs/:id", () => {
 
   test("Debe devolver 404 cuando el ID no existe", async () => {
     const jobId = "noexiste";
-    const response = await fetch(`${BASE_URL}/jobs/${jobId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    assert.strictEqual(response.status, 404);
-
+    await handlePutRequestAndAssertStatus(`/jobs/${jobId}`, {}, 404);
   })
 });
 
@@ -249,53 +253,29 @@ describe("PATCH /jobs/:id", () => {
       ubicacion: "Medellin",
     };
 
-    const putResponse = await fetch(`${BASE_URL}/jobs/${jobId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(partialUpdatedJob),
-    });
+   await handlePatchRequestAndAssertStatus(`/jobs/${jobId}`, partialUpdatedJob, 204); 
 
-    assert.strictEqual(putResponse.status, 204, "El status debe ser 204");
-
-    const getResponse = await fetch(`${BASE_URL}/jobs/${jobId}`);
-    assert.strictEqual(getResponse.status, 200);
-
-    const json = await getResponse.json();
-    assert.strictEqual(json.titulo, partialUpdatedJob.titulo, "El titulo debe haberse actualizado");
-    assert.strictEqual(json.ubicacion, partialUpdatedJob.ubicacion, "La ubicacion debe haberse actualizado");
+   const json = await handleGetRequestAndAssertStatus(`/jobs/${jobId}`, 200);
+   assert.strictEqual(json.titulo, partialUpdatedJob.titulo, "El titulo debe haberse actualizado");
+   assert.strictEqual(json.ubicacion, partialUpdatedJob.ubicacion, "La ubicacion debe haberse actualizado");
   });
 
   test("Debe devolver 404 cuando el ID no existe", async () => {
     const jobId = "noexiste";
-    const response = await fetch(`${BASE_URL}/jobs/${jobId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ titulo: "Titulo actualizado" }),
-    });
-
-    assert.strictEqual(response.status, 404);
+    await handlePatchRequestAndAssertStatus(`/jobs/${jobId}`, { titulo: "Titulo actualizado" }, 404);
   });
 });
 
 describe("DELETE /jobs/:id", () => {
   test("Debe recibir 204 y eliminar el trabajo", async () => {
     const jobId = "f62d8a34-923a-4ac2-9b0b-14e0ac2f5405";
-    const deleteResponse = await fetch(`${BASE_URL}/jobs/${jobId}`, {
-      method: "DELETE",
-    });
+    await handleDeleteRequestAndAssertStatus(`/jobs/${jobId}`, 204);
     
-    assert.strictEqual(deleteResponse.status, 204);
-    
-    const getResponse = await fetch(`${BASE_URL}/jobs/${jobId}`);
-    assert.strictEqual(getResponse.status, 404);
+    await handleGetRequestAndAssertStatus(`/jobs/${jobId}`, 404);
   });
 
   test("Debe devolver 404 cuando el ID no existe", async () => {
     const jobId = "noexiste";
-    const response = await fetch(`${BASE_URL}/jobs/${jobId}`, {
-      method: "DELETE",
-    });
-
-    assert.strictEqual(response.status, 404);
+    await handleDeleteRequestAndAssertStatus(`/jobs/${jobId}`, 404);
   })
 });
