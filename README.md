@@ -18,3 +18,4 @@ En este repositorio podrás ir entregando los ejercicios del bootcamp
 | 8 | **testing con node y zod** | Desarrolla los retos de testing con node y zod | [![GitHub Badge](https://img.shields.io/badge/estado-entregado-green)](08-ejercicio-testing-con-node-y-zod)         |
 | 9 | **testing e2e con playwright** | Desarrolla los retos de testing e2e con playwright | [![GitHub Badge](https://img.shields.io/badge/estado-entregado-green)](09-ejercicio-test-e2e-con-ia)         |
 | 10 | **typescript** | Desarrolla los retos de typescript | [![GitHub Badge](https://img.shields.io/badge/estado-entregado-green)](10-ejercicio-typescript) |
+| 11 | **sql** | Desarrolla los retos de sql | [![GitHub Badge](https://img.shields.io/badge/estado-pendiente-yellow)](11-ejercicio-sql) |
