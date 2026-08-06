@@ -1,0 +1,35 @@
+name: 04 - Events
+
+on:
+  issues:
+    types: [opened, assigned]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  inspect-event:
+    runs-on: ubuntu-24.04
+    permissions:
+      issues: write
+    steps:
+      - name: Imprimir evento
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          echo "Evento: $EVENT_NAME"
+          echo "Issue: $ISSUE_NUMBER"
+          echo "Comentario: $COMMENT_BODY"
+
+      - name: Comentar como bot
+        if: github.event_name == 'issues' && github.event.action == 'opened'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --repo "$REPO" \
+            --body "¡Gracias por abrir esta issue! La revisaremos lo antes posible."
