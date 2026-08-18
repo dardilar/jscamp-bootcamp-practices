@@ -1,5 +1,6 @@
-import { db } from "./database";
-
+import crypto from 'node:crypto'
+import jobs from '../jobs.json'
+import { db } from './database'
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS jobs (
@@ -19,10 +20,10 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS job_content (
+    id TEXT PRIMARY KEY,
     job_id TEXT NOT NULL,
     description TEXT NOT NULL,
-    id TEXT PRIMARY KEY,
-    responsabilities TEXT NOT NULL,
+    responsibilities TEXT NOT NULL,
     requirements TEXT NOT NULL,
     about TEXT NOT NULL,
     FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE
@@ -40,29 +41,30 @@ const insertJobTechnology = db.prepare(`
 `)
 
 const insertJobContent = db.prepare(`
-  INSERT INTO job_content (job_id, description, id, responsabilities, requirements, about)
+  INSERT INTO job_content (id, job_id, description, responsibilities, requirements, about)
   VALUES (?, ?, ?, ?, ?, ?)
 `)
 
+/* Con esto hacemos dos cosas: */
+/* Usamos los datos que vienen de jobs.json para insertar los jobs en la base de datos */
+/* Permitimos que se pueda correr varias veces el seed, sin tener errores */
 const seed = db.transaction(() => {
-  // Insert jobs
-  insertJob.run('1', 'Frontend Developer', 'Google', 'Madrid', 'Description', 'remote', 'senior')
-  insertJob.run('2', 'Backend Developer', 'Microsoft', 'Barcelona', 'Description', 'onsite', 'mid')
-  insertJob.run('3', 'Fullstack Developer', 'Amazon', 'Valencia', 'Description', 'hybrid', 'junior')
+  for (const job of jobs) {
+    insertJob.run(job.id, job.title, job.company, job.location, job.description, job.modality, job.level)
 
-  // Insert job technologies
-  insertJobTechnology.run('1', 'React')
-  insertJobTechnology.run('1', 'TypeScript')
-  insertJobTechnology.run('2', 'Node.js')
-  insertJobTechnology.run('2', 'Express')
-  insertJobTechnology.run('3', 'React')
-  insertJobTechnology.run('3', 'Node.js')
-  insertJobTechnology.run('3', 'TypeScript')
+    for (const technology of job.technologies) {
+      insertJobTechnology.run(job.id, technology)
+    }
 
-  // Insert job content
-  insertJobContent.run('1', 'Description', '1', 'Responsabilities', 'Requirements', 'About')
-  insertJobContent.run('2', 'Description', '2', 'Responsabilities', 'Requirements', 'About')
-  insertJobContent.run('3', 'Description', '3', 'Responsabilities', 'Requirements', 'About')
+    insertJobContent.run(
+      crypto.randomUUID(),
+      job.id,
+      job.content.description,
+      job.content.responsibilities,
+      job.content.requirements,
+      job.content.about
+    )
+  }
 })
 
 seed()

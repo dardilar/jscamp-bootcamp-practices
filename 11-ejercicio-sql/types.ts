@@ -47,11 +47,28 @@ export interface JobFilters {
   tech?: string
   modality?: JobData['modality']
   level?: JobData['level']
+  limit?: number // <- Agregamos limit y offset para dejar implementada la feature de paginación
+  offset?: number
 }
 
 // ================================
 // RESPUESTAS DE API
 // ================================
+
+/* Esto es opcional, pero queríamos hacerlo para que pudieras tener un enfoque más completo del ejercicio */
+export interface Pagination {
+  limit: number
+  offset: number
+  total: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
+
+// Respuesta paginada de GET /jobs
+export interface PaginatedJobs {
+  data: Job[]
+  pagination: Pagination
+}
 
 export interface ApiError {
   message: string
