@@ -1,37 +1,40 @@
 import crypto from 'node:crypto'
 import { db } from '../db/database'
-import type { Job, JobData, CreateJobDTO, UpdateJobDTO, JobFilters } from '../types'
+import type { CreateJobDTO, Job, JobData, JobFilters, PaginatedJobs, UpdateJobDTO } from '../types'
 
 export class JobModel {
-  // Obtener todos los jobs con filtros opcionales
-  static async getAll(filters?: JobFilters): Promise<Job[]> {
-    // TODO: Debemos hacer la consulta a la base de datos para obtener todos los resultados, y por cada filtro, debemos agregarlo a la consulta
-    
+  // Obtener todos los jobs con filtros opcionales y paginación
+  static async getAll(filters?: JobFilters): Promise<PaginatedJobs> {
     let query = `SELECT j.id, j.title, j.company, j.location, j.description, j.modality, j.level, GROUP_CONCAT(jt.technology) as technologies FROM jobs j LEFT JOIN job_technologies jt ON j.id = jt.job_id`
 
     const conditions: string[] = []
     const params: unknown[] = []
 
-    if(filters?.modality) {
+    if (filters?.modality) {
       conditions.push('j.modality = ?')
       params.push(filters.modality)
     }
 
-    if(filters?.level) {
+    if (filters?.level) {
       conditions.push('j.level = ?')
       params.push(filters.level)
     }
 
-    if(filters?.tech) {
+    if (filters?.tech) {
       conditions.push('j.id IN (SELECT job_id FROM job_technologies WHERE technology = ? COLLATE NOCASE)')
       params.push(filters.tech)
     }
 
-    if(conditions.length > 0) {
-      query += ` WHERE ${conditions.join(' AND ')}`
-    }
+    const where = conditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}` : ''
 
-    query += ' GROUP BY j.id'
+    // Total de resultados con los mismos filtros, sin paginar
+    const total = (db.prepare(`SELECT COUNT(*) as count FROM jobs j${where}`).get(...params) as { count: number }).count
+
+    const limit = filters?.limit ?? 10
+    const offset = filters?.offset ?? 0
+
+    query += `${where} GROUP BY j.id ORDER BY j.id LIMIT ? OFFSET ?`
+    params.push(limit, offset)
 
     const rows = db.prepare(query).all(...params) as Array<{
       id: string
@@ -44,7 +47,7 @@ export class JobModel {
       technologies: string | null
     }>
 
-    return rows.map((row) => ({
+    const data = rows.map((row) => ({
       id: row.id,
       title: row.title,
       company: row.company,
@@ -56,6 +59,17 @@ export class JobModel {
         level: row.level
       }
     }))
+
+    return {
+      data,
+      pagination: {
+        limit,
+        offset,
+        total,
+        hasNextPage: offset + data.length < total,
+        hasPreviousPage: offset > 0
+      }
+    }
   }
 
   // Obtener un job por ID
@@ -102,12 +116,19 @@ export class JobModel {
 
     const insertTech = db.prepare(`INSERT INTO job_technologies (job_id, technology) VALUES (?, ?)`)
 
+    const insertContent = db.prepare(`INSERT INTO job_content (id, job_id, description, responsibilities, requirements, about) VALUES (?, ?, ?, ?, ?, ?)`)
+
     const transaction = db.transaction(() => {
       insertJob.run(newJob.id, newJob.title, newJob.company, newJob.location, newJob.description, newJob.data.modality, newJob.data.level)
 
       newJob.data.technology.forEach(tech => {
         insertTech.run(newJob.id, tech)
       })
+
+      // Guardamos el contenido opcional asociado al nuevo job
+      if (newJob.content) {
+        insertContent.run(crypto.randomUUID(), newJob.id, newJob.content.description, newJob.content.responsibilities, newJob.content.requirements, newJob.content.about)
+      }
     })
 
     transaction()
@@ -160,6 +181,9 @@ export class JobModel {
     const insertTech = db.prepare(`INSERT INTO job_technologies (job_id, technology) VALUES (?, ?)`)
     const deleteTech = db.prepare(`DELETE FROM job_technologies WHERE job_id = ?`)
 
+    const insertContent = db.prepare(`INSERT INTO job_content (id, job_id, description, responsibilities, requirements, about) VALUES (?, ?, ?, ?, ?, ?)`)
+    const deleteContent = db.prepare(`DELETE FROM job_content WHERE job_id = ?`)
+
     const transaction = db.transaction(() => {
       if (fields.length > 0) {
         db.prepare(`UPDATE jobs SET ${fields.join(', ')} WHERE id = ?`).run(...params, id)
@@ -170,6 +194,12 @@ export class JobModel {
         input.data.technology.forEach((tech) => {
           insertTech.run(id, tech)
         })
+      }
+
+      // Reemplazamos el contenido asociado al job cuando viene en el body
+      if (input.content != undefined) {
+        deleteContent.run(id)
+        insertContent.run(crypto.randomUUID(), id, input.content.description, input.content.responsibilities, input.content.requirements, input.content.about)
       }
     })
 
