@@ -6,8 +6,17 @@ export class JobController {
   // GET /jobs
   // Query params tipados
   static async getAll(req: Request<{}, {}, {}, JobFilters>, res: Response): Promise<void> {
-    const { tech, modality, level } = req.query
-    const jobs = await JobModel.getAll({ tech, modality, level })
+    const { tech, modality, level, limit, offset } = req.query
+
+    // Sanitizamos los parámetros de paginación
+    const numberLimit = Number(limit)
+    const numberOffset = Number(offset)
+
+    // Usamos isInteger para evitar Infinity, -Infinity, NaN, números decimales y también verificamos que sean positivos.
+    const safeLimit = Math.min(Number.isInteger(numberLimit) ? numberLimit : 10, 100)
+    const safeOffset = Math.max(Number.isInteger(numberOffset) ? numberOffset : 0, 0)
+
+    const jobs = await JobModel.getAll({ tech, modality, level, limit: safeLimit, offset: safeOffset })
     res.json(jobs)
   }
 
