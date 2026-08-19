@@ -31,4 +31,7 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           REPO: ${{ github.repository }}
         run: |
-          gh issue comment ${{ env.ISSUE_NUMBER }} --body "¡Hola! Gracias por abrir este issue." --repo ${{ env.REPO }}
+          # Usa variables de entorno y comillas para evitar problemas de shell.
+          gh issue comment "$ISSUE_NUMBER" \
+            --body "¡Hola! Gracias por abrir este issue." \
+            --repo "$REPO"
