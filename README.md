@@ -20,4 +20,4 @@ En este repositorio podrás ir entregando los ejercicios del bootcamp
 | 10 | **typescript** | Desarrolla los retos de typescript | [![GitHub Badge](https://img.shields.io/badge/estado-entregado-green)](10-ejercicio-typescript) |
 | 11 | **sql** | Desarrolla los retos de sql | [![GitHub Badge](https://img.shields.io/badge/estado-entregado-green)](11-ejercicio-sql) |
 | 12 | **ci/cd** | Desarrolla los retos de ci/cd | [![GitHub Badge](https://img.shields.io/badge/estado-entregado-green)](12-ejercicio-cicd) |
-| 13 | **docker** | Desarrolla los retos de docker | [![GitHub Badge](https://img.shields.io/badge/estado-pendiente-yellow)](13-ejercicio-docker) |
+| 13 | **docker** | Desarrolla los retos de docker | [![GitHub Badge](https://img.shields.io/badge/estado-entregado-green)](13-ejercicio-docker) |
